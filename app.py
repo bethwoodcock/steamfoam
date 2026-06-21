@@ -54,6 +54,7 @@ PAGE = """<!DOCTYPE html>
   </div>
   <span class="count" id="count"></span>
   <button id="dlcBtn" onclick="toggleDlc(this)">DLC: Hidden</button>
+  <button id="stockBtn" onclick="toggleStock(this)">Out of Stock: Hidden</button>
 </div>
 <div class="table-wrap">
   <table id="tbl">
@@ -66,7 +67,7 @@ PAGE = """<!DOCTYPE html>
     </tr></thead>
     <tbody id="tbody">
     {% for g in games %}
-    <tr class="row" data-status="{{ g.status }}" data-title="{{ g.title|lower }}" data-price="{{ g.price_gbp }}" data-first="{{ g.first_seen }}" onclick="window.open('{{ g.url }}','_blank')">
+    <tr class="row" data-status="{{ g.status }}" data-title="{{ g.title|lower }}" data-price="{{ g.price_gbp }}" data-first="{{ g.first_seen }}" data-instock="{{ g.in_stock }}" onclick="window.open('{{ g.url }}','_blank')">
       <td>{{ g.title }}</td>
       <td>£{{ "%.2f"|format(g.price_gbp|float) }}</td>
       <td>
@@ -86,6 +87,7 @@ PAGE = """<!DOCTYPE html>
   let activeFilter = 'all';
   let sortCol = null, sortAsc = true;
   let showDlc = false;
+  let showOutOfStock = false;
 
   function setFilter(f, btn) {
     activeFilter = f;
@@ -101,17 +103,26 @@ PAGE = """<!DOCTYPE html>
     filter();
   }
 
+  function toggleStock(btn) {
+    showOutOfStock = !showOutOfStock;
+    btn.textContent = showOutOfStock ? 'Out of Stock: Shown' : 'Out of Stock: Hidden';
+    btn.classList.toggle('active', showOutOfStock);
+    filter();
+  }
+
   function filter() {
     const q = document.getElementById('search').value.toLowerCase();
     let visible = 0;
     document.querySelectorAll('#tbody tr').forEach(row => {
       const status = row.dataset.status;
       const title = row.dataset.title;
+      const inStock = row.dataset.instock === 'True';
       const isDlc = title.includes('dlc');
       const matchFilter = activeFilter === 'all' || status === activeFilter;
       const matchSearch = !q || row.textContent.toLowerCase().includes(q);
       const matchDlc = showDlc || !isDlc;
-      const show = matchFilter && matchSearch && matchDlc;
+      const matchStock = showOutOfStock || inStock;
+      const show = matchFilter && matchSearch && matchDlc && matchStock;
       row.classList.toggle('hidden', !show);
       if (show) visible++;
     });

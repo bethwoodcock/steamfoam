@@ -27,7 +27,9 @@ def extract_games_from_page(html: str) -> list[dict]:
             continue
 
         url = href if href.startswith("http") else "https://www.loaded.com" + href
-        games.append({"title": title, "price_gbp": price, "url": url})
+        label = card.select_one("span.item-label")
+        in_stock = not (label and label.get_text(strip=True).lower() == "sold out")
+        games.append({"title": title, "price_gbp": price, "url": url, "in_stock": in_stock})
 
     return games
 

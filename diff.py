@@ -13,6 +13,7 @@ def compute_diff(
         title = game["title"]
         new_price = game["price_gbp"]
         url = game["url"]
+        in_stock = game.get("in_stock", True)
 
         if title not in existing_games:
             games_to_write.append({
@@ -23,6 +24,7 @@ def compute_diff(
                 "price_change": "",
                 "first_seen": today,
                 "last_seen": today,
+                "in_stock": in_stock,
             })
             history_events.append({
                 "timestamp": today,
@@ -60,6 +62,7 @@ def compute_diff(
                 "price_change": price_change,
                 "first_seen": existing.get("first_seen", today),
                 "last_seen": today,
+                "in_stock": in_stock,
             })
 
     status_order = {"NEW": 0, "PRICE_DOWN": 1, "PRICE_UP": 2, "": 3}

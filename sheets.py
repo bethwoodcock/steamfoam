@@ -10,7 +10,7 @@ SCOPES = [
     "https://www.googleapis.com/auth/drive",
 ]
 
-GAMES_HEADERS = ["title", "price_gbp", "url", "status", "price_change", "first_seen", "last_seen"]
+GAMES_HEADERS = ["title", "price_gbp", "url", "status", "price_change", "first_seen", "last_seen", "in_stock"]
 HISTORY_HEADERS = ["timestamp", "title", "event", "old_price", "new_price", "url"]
 
 
