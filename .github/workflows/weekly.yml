@@ -1,0 +1,36 @@
+name: Weekly SteamFoam Crawl
+
+on:
+  schedule:
+    - cron: "0 0 * * 0"  # Every Sunday at midnight UTC
+  workflow_dispatch:       # Also allows manual trigger from GitHub UI
+
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          playwright install chromium
+          playwright install-deps chromium
+
+      - name: Write service account credentials
+        run: |
+          mkdir -p credentials
+          echo '${{ secrets.GOOGLE_SERVICE_ACCOUNT_JSON }}' > credentials/service-account.json
+
+      - name: Run crawl
+        env:
+          SPREADSHEET_ID: ${{ secrets.SPREADSHEET_ID }}
+          GOOGLE_SERVICE_ACCOUNT_JSON: credentials/service-account.json
+        run: python run.py
