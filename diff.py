@@ -15,7 +15,7 @@ def compute_diff(
         url = game["url"]
         in_stock = game.get("in_stock", True)
 
-        if title not in existing_games:
+        if url not in existing_games:
             games_to_write.append({
                 "title": title,
                 "price_gbp": new_price,
@@ -35,7 +35,7 @@ def compute_diff(
                 "url": url,
             })
         else:
-            existing = existing_games[title]
+            existing = existing_games[url]
             old_price = float(existing.get("price_gbp", 0) or 0)
             delta = round(new_price - old_price, 2)
 

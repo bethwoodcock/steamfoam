@@ -29,7 +29,7 @@ def read_existing_games(client) -> dict[str, dict]:
     sh = client.open_by_key(SPREADSHEET_ID)
     ws = sh.worksheet(SHEET_GAMES)
     records = ws.get_all_records()
-    return {r["title"]: r for r in records}
+    return {r["url"]: r for r in records}
 
 
 def write_games(client, games_data: list[dict]):
