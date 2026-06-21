@@ -1,6 +1,6 @@
 import asyncio
 from crawler import fetch_all_games
-from sheets import get_client, read_existing_games, write_games, append_history
+from sheets import get_client, read_existing_games, write_games, append_history, prune_history
 from diff import compute_diff
 
 
@@ -27,6 +27,7 @@ async def main():
     print("\nStep 4: Writing to Google Sheets...")
     write_games(client, games_to_write)
     append_history(client, history_events)
+    prune_history(client)
 
     print("\n=== SteamFoam done ===")
     print(f"  {new_count} new | {changed_count} price changes | {len(games_to_write)} total tracked")

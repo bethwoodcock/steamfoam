@@ -1,6 +1,9 @@
 import gspread
 from google.oauth2.service_account import Credentials
+from datetime import datetime, timedelta
 from config import SERVICE_ACCOUNT_JSON, SPREADSHEET_ID, SHEET_GAMES, SHEET_HISTORY
+
+HISTORY_RETENTION_DAYS = 60
 
 SCOPES = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -38,6 +41,33 @@ def write_games(client, games_data: list[dict]):
     if rows:
         ws.append_rows(rows, value_input_option="USER_ENTERED")
     print(f"  Wrote {len(rows)} games to '{SHEET_GAMES}' tab.")
+
+
+def prune_history(client):
+    """Delete history rows older than HISTORY_RETENTION_DAYS."""
+    sh = client.open_by_key(SPREADSHEET_ID)
+    ws = sh.worksheet(SHEET_HISTORY)
+    rows = ws.get_all_values()
+    if len(rows) <= 1:
+        return
+    cutoff = datetime.today() - timedelta(days=HISTORY_RETENTION_DAYS)
+    keep = [rows[0]]  # always keep header
+    removed = 0
+    for row in rows[1:]:
+        try:
+            row_date = datetime.strptime(row[0], "%Y-%m-%d")
+            if row_date >= cutoff:
+                keep.append(row)
+            else:
+                removed += 1
+        except (ValueError, IndexError):
+            keep.append(row)  # keep rows with unparseable dates
+    if removed:
+        ws.clear()
+        ws.update(keep)
+        print(f"  Pruned {removed} history rows older than {HISTORY_RETENTION_DAYS} days.")
+    else:
+        print(f"  No history rows to prune.")
 
 
 def append_history(client, events: list[dict]):
