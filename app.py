@@ -64,6 +64,7 @@ PAGE = """<!DOCTYPE html>
       <th onclick="sortBy('status')">Status ↕</th>
       <th>Change</th>
       <th onclick="sortBy('first_seen')">First Seen ↕</th>
+      <th>Stock</th>
     </tr></thead>
     <tbody id="tbody">
     {% for g in games %}
@@ -78,6 +79,7 @@ PAGE = """<!DOCTYPE html>
       </td>
       <td>{{ g.price_change or '—' }}</td>
       <td>{{ g.first_seen or '' }}</td>
+      <td>{{ '✅' if g.in_stock else '❌' }}</td>
     </tr>
     {% endfor %}
     </tbody>
@@ -154,10 +156,15 @@ PAGE = """<!DOCTYPE html>
 </body>
 </html>"""
 
+def _is_in_stock(val):
+    return str(val).upper() not in ("FALSE", "0", "")
+
 @app.route("/")
 def index():
     client = get_client()
     games_dict = read_existing_games(client)
+    for g in games_dict.values():
+        g["in_stock"] = _is_in_stock(g.get("in_stock", True))
     games = sorted(games_dict.values(), key=lambda g: (
         {"NEW": 0, "PRICE_DOWN": 1, "PRICE_UP": 2, "": 3}.get(g.get("status", ""), 3),
         g.get("title", "").lower()
