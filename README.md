@@ -2,7 +2,7 @@
 
 > **Personal project — not intended for public use.** This tool is built around my own Google Sheets account and service account credentials, so it won't run for anyone else without their own setup. Shared here as a portfolio piece.
 
-A personal weekend project built to scratch an itch: I wanted a weekly digest of cheap Steam games without manually checking a store page. SteamFoam crawls [loaded.com](https://www.loaded.com/pc/steam) every Sunday, finds every Steam game under £3, detects new listings and price changes, and writes everything to a private Google Sheet. A local Flask dashboard lets me filter and search the results.
+SteamFoam crawls [loaded.com](https://www.loaded.com/pc/steam) every Sunday, finds every Steam game under £3, detects new listings and price changes, and writes everything to a private Google Sheet. A local Flask dashboard lets me filter and search the results.
 
 **What it does:**
 - Crawls ~200 pages of loaded.com using Playwright (headless Chromium)
