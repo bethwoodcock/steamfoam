@@ -61,7 +61,7 @@ PAGE = """<!DOCTYPE html>
     <thead><tr>
       <th onclick="sortBy('title')">Game ↕</th>
       <th onclick="sortBy('price')">Price ↕</th>
-      <th>Status</th>
+      <th onclick="sortBy('status')">Status ↕</th>
       <th>Change</th>
       <th onclick="sortBy('first_seen')">First Seen ↕</th>
     </tr></thead>
@@ -129,11 +129,18 @@ PAGE = """<!DOCTYPE html>
     document.getElementById('count').textContent = visible.toLocaleString() + ' games';
   }
 
+  const STATUS_ORDER = {'NEW': 0, 'PRICE_DOWN': 1, 'PRICE_UP': 2, '': 3};
+
   function sortBy(col) {
     const tbody = document.getElementById('tbody');
     const rows = Array.from(tbody.querySelectorAll('tr'));
     if (sortCol === col) sortAsc = !sortAsc; else { sortCol = col; sortAsc = true; }
     rows.sort((a, b) => {
+      if (col === 'status') {
+        const ao = STATUS_ORDER[a.dataset.status] ?? 3;
+        const bo = STATUS_ORDER[b.dataset.status] ?? 3;
+        return sortAsc ? ao - bo : bo - ao;
+      }
       let av = a.dataset[col === 'price' ? 'price' : col === 'first_seen' ? 'first' : 'title'];
       let bv = b.dataset[col === 'price' ? 'price' : col === 'first_seen' ? 'first' : 'title'];
       if (col === 'price') { av = parseFloat(av); bv = parseFloat(bv); }
