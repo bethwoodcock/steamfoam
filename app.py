@@ -67,7 +67,7 @@ PAGE = """<!DOCTYPE html>
     </tr></thead>
     <tbody id="tbody">
     {% for g in games %}
-    <tr class="row" data-status="{{ g.status }}" data-title="{{ g.title|lower }}" data-price="{{ g.price_gbp }}" data-first="{{ g.first_seen }}" data-instock="{{ g.in_stock }}" onclick="window.open('{{ g.url }}','_blank')">
+    <tr class="row" data-status="{{ g.status }}" data-title="{{ g.title|lower }}" data-price="{{ g.price_gbp }}" data-first="{{ g.first_seen }}" data-instock="{{ 'true' if g.in_stock else 'false' }}" onclick="window.open('{{ g.url }}','_blank')">
       <td>{{ g.title }}</td>
       <td>£{{ "%.2f"|format(g.price_gbp|float) }}</td>
       <td>
@@ -116,7 +116,7 @@ PAGE = """<!DOCTYPE html>
     document.querySelectorAll('#tbody tr').forEach(row => {
       const status = row.dataset.status;
       const title = row.dataset.title;
-      const inStock = row.dataset.instock === 'True';
+      const inStock = row.dataset.instock === 'true';
       const isDlc = title.includes('dlc');
       const matchFilter = activeFilter === 'all' || status === activeFilter;
       const matchSearch = !q || row.textContent.toLowerCase().includes(q);
