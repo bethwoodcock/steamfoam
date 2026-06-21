@@ -53,6 +53,7 @@ PAGE = """<!DOCTYPE html>
     <button onclick="setFilter('PRICE_UP', this)">🟠 Price Up</button>
   </div>
   <span class="count" id="count"></span>
+  <button id="dlcBtn" onclick="toggleDlc(this)">DLC: Hidden</button>
 </div>
 <div class="table-wrap">
   <table id="tbl">
@@ -84,11 +85,19 @@ PAGE = """<!DOCTYPE html>
 <script>
   let activeFilter = 'all';
   let sortCol = null, sortAsc = true;
+  let showDlc = false;
 
   function setFilter(f, btn) {
     activeFilter = f;
-    document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.filters button').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
+    filter();
+  }
+
+  function toggleDlc(btn) {
+    showDlc = !showDlc;
+    btn.textContent = showDlc ? 'DLC: Shown' : 'DLC: Hidden';
+    btn.classList.toggle('active', showDlc);
     filter();
   }
 
@@ -97,9 +106,12 @@ PAGE = """<!DOCTYPE html>
     let visible = 0;
     document.querySelectorAll('#tbody tr').forEach(row => {
       const status = row.dataset.status;
+      const title = row.dataset.title;
+      const isDlc = title.includes('dlc');
       const matchFilter = activeFilter === 'all' || status === activeFilter;
       const matchSearch = !q || row.textContent.toLowerCase().includes(q);
-      const show = matchFilter && matchSearch;
+      const matchDlc = showDlc || !isDlc;
+      const show = matchFilter && matchSearch && matchDlc;
       row.classList.toggle('hidden', !show);
       if (show) visible++;
     });
